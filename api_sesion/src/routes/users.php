@@ -3,12 +3,9 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-
 $app = new \Slim\App;
-
 $app->get('/api/users',function(Request $request, Response $response){
     $query="CALL sp_get_allUsers;";
-
     try{
         $db = new db();
         $db=$db->connect();
@@ -34,6 +31,29 @@ $app->get('/api/users/{nameUser}',function(Request $request, Response $response)
     }catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
+});
+
+$app->post('/api/users/add',function(Request $request, Response $response){
+        $nameUser=$request->getParam('nameUser');
+        $passUser=$request->getParam('passUser');
+        $typeUser=$request->getParam('typeUser');
+	    $query = "INSERT INTO `proyecto_ciisa`.`tbl_users` (user, password, type_user) VALUES (:nameUser, :passUser,:typeUser)";
+        try{
+            $db = new db();
+            $db=$db->connect();
+            $stmt=$db->prepare($query);
+            $stmt->bindParam('nameUser',$nameUser);
+            $stmt->bindParam('passUser',$passUser);
+            $stmt->bindParam('typeUser',$typeUser);
+            $stmt->execute();
+            //password_hash($user->password(), PASSWORD_BCRYPT);
+            echo '{"error": {"text": "Cliente Agregado"}';
+        }catch(PDOException $e){
+            echo '{"error": {"text": '.$e->getMessage().'}';
+        }
+    
+    }
+	
 });
 
 ?>

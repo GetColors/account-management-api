@@ -1,6 +1,5 @@
 <?php
 
-
 ?>
 
 <!DOCTYPE html>
@@ -15,9 +14,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="css/index.css" />
 </head>
 <body class="">
-<nav class="navbar navbar-expand-lg  bg-primary">
-    <h1 class="text-light">GetColors FC</h1>
-</nav>
+    <?php  include 'php/header.php'; ?>
     <div class="container mt-5">
         <div class="row">
             <div class="col-xl-4 col-lg-4 col-md-3 col-sm-1"></div>
@@ -37,8 +34,7 @@
                             <p class="my-3 mx-3"> Olvidaste tu contraseña <a href=""  id="recoverPassword" class="link">Presiona Aqui</a></p>
                             <div id="response" class="ml-4"></div>
                         </div>
-                    </form>
-                    
+                    </form>             
                     <form id="formRecoverPassword">
                         <div class="card p-4">
                             <form action="">

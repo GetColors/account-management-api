@@ -4,9 +4,9 @@ var response=document.getElementById("response");
 form.addEventListener('submit',function(e){
     e.preventDefault();
     var formDates= new FormData(form);
-    //Consuminedo Api
     var nameUser = formDates.get('nameUser');
     var pass = formDates.get('pass');
+        //Consuminedo Api
     url='http://localhost/proyecto_ciisa/api_sesion/public/api/users/'+ formDates.get('nameUser');
     fetch(url)
         .then(res=>res.json())
