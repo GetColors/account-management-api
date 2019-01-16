@@ -1,0 +1,20 @@
+{
+  "require": {
+    "slim/slim": "3.0",
+    "illuminate/database": "*",
+    "ext-json": "*",
+    "firebase/php-jwt": "^5.0"
+  },
+
+  "authors": [
+    {
+      "name": "Jean Luis Soto",
+      "email": "nafre.jean@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Atenas\\": "src/"
+    }
+  }
+}
