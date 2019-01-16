@@ -2,8 +2,7 @@
   "require": {
     "slim/slim": "3.0",
     "illuminate/database": "*",
-    "ext-json": "*",
-    "firebase/php-jwt": "^5.0"
+    "ext-json": "*"
   },
 
   "authors": [
