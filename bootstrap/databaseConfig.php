@@ -3,7 +3,7 @@
 define('DB_CONFIG', array(
         'driver' => 'mysql',
         'host' => 'localhost',
-        'database' => 'atenas',
+        'database' => 'proyecto_ciisa',
         'username' => 'root',
         'password' => '8899',
         'charset' => 'utf8',
