@@ -1,3 +1,5 @@
 <?php
 
-class EmailAlreadyExistsException extends Exception{}
+namespace Atenas\Models\User;
+
+class EmailAlreadyExistsException extends \Exception{}

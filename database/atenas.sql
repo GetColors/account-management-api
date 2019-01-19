@@ -29,6 +29,8 @@ CREATE TABLE `users` (
   `username` varchar(15) NOT NULL,
   `email` varchar(45) NOT NULL,
   `password` varchar(200) NOT NULL,
+  'validation_code' varchar (50),
+  'isActive' int,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`),

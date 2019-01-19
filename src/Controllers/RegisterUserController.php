@@ -6,13 +6,68 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Atenas\Models\User\User;
 use Atenas\Controllers\Base\Controller;
+use Atenas\Models\User\EmailAlreadyExistsException;
+use Atenas\Models\User\UserAlreadyExistsException;
 
 class RegisterUserController extends Controller
-{
+{ 
+    public function activate(Request $request, Response $response, $args)
+    {
+        $username = $args['username'];
+        $code = $args['code'];
+
+        if(is_null($username) || is_null($code)){
+            $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
+        }
+
+        if(!empty($errors)){
+            $response->withJson(
+                [
+                    'errors' => $errors
+                ],
+                400);
+        }
+        if(empty($username)){
+            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
+        }
+        if(empty($code)){
+            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
+        }
+        if(strlen($username)>15 || strlen($username)<5){
+            $errors [] = ['code'=>1004,'error'=>'The username can not be less than 5, nor more than 15 characters.'];
+        }
+            
+        if(!empty($errors)){
+            $response->withJson(
+                [
+                    'errors' => $errors
+                ],
+                400);
+        }
+
+        $foundedUser = User::where('username',$username)->first();
+        
+        if(is_null($foundedUser)){
+            print_r("User not found.");
+            exit(400);
+        }
+
+        if($foundedUser->activate_code !== $code){
+            print_r("Validation code invalid.");
+            exit(400);
+        }
+
+        $foundedUser->activate_code = 1;
+        $foundedUser->save();
+        $response->withJson(
+            [
+                'message' => $username . ' Su Cuenta ha sido activada'
+            ],
+            200);
+    }
+ 
     public function register(Request $request, Response $response)
     {
-        // var_dump(User::where("username","jsoto")->get());
-        // var_dump(User::find(6));
         $body = $request->getParsedBody();
         $errors=array();
 
@@ -27,35 +82,7 @@ class RegisterUserController extends Controller
             $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
         }
 
-        if(!empty($username))
-        {
-            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
-        }
-        if(!empty($email))
-        {
-            $errors [] = ['code'=>1002,'error'=>'The mail field can not remain empty.'];
-        }
-        if(!empty($password))
-        {
-            $errors [] = ['code'=>1003,'error'=>'The password field can not remain empty.'];
-        }
-
-        if(strlen($username)>15 || strlen($username)<5)
-        {
-            $errors [] = ['code'=>1004,'error'=>'The username can not be less than 5, nor more than 15 characters.'];
-        }
-        if(strlen($password)<8)
-        {
-            $errors [] = ['code'=>1005,'error'=>'The password must be greater than 5 characters.'];
-        }
-
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-        {
-            $errors [] = ['code'=>1006,'error'=>'You must enter a valid email.'];
-        }
-
-        if(!empty($errors))
-        {
+        if(!empty($errors)){
             $response->withJson(
                 [
                     'errors' => $errors
@@ -63,7 +90,35 @@ class RegisterUserController extends Controller
                 400);
         }
 
+        if(empty($username)){
+            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
+        }
+        if(empty($email)){
+            $errors [] = ['code'=>1002,'error'=>'The mail field can not remain empty.'];
+        }
+        if(empty($password)){
+            $errors [] = ['code'=>1003,'error'=>'The password field can not remain empty.'];
+        }
 
+        if(strlen($username)>15 || strlen($username)<5){
+            $errors [] = ['code'=>1004,'error'=>'The username can not be less than 5, nor more than 15 characters.'];
+        }
+        if(strlen($password)<8){
+            $errors [] = ['code'=>1005,'error'=>'The password must be greater than 5 characters.'];
+        }
+
+        if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+            $errors [] = ['code'=>1006,'error'=>'You must enter a valid email.'];
+        }
+
+        if(!empty($errors)){
+            $response->withJson(
+                [
+                    'errors' => $errors
+                ],
+                400);
+        }
+        
         $user= new User();
 
         try{
@@ -74,21 +129,21 @@ class RegisterUserController extends Controller
                     'data' => "usuario registrado"
                 ],
                 200);
-        }catch (QueryException $exception){
-            if($exception->code() === 23000){
-                $response->withJson([
-                    'error' => [
-                        'code'=> 23000,
-                        'message' => "The user entered is already in use.."
-                        ]
-                ],400);
-            }
-            //asi :)
-            //por cada uno?
-//si, por cada código de error, debes provocarlos eso si.
-            //por ejemplo, poniendo mal la pass de la bd
-            //enviando emails ya registrados, usuarios
-            //asi
-        } 
+        }catch (UserAlreadyExistException $exception){
+            
+            $response->withJson([
+                'error' => [
+                    'code'=> 1007,
+                    'message' => $exception->getMessage()
+                    ]
+            ],400);
+        } catch(EmailAlreadyExistException $exception){
+            $response->withJson([
+                'error' => [
+                    'code'=> 1008,
+                    'message' => $exception->getMessage()
+                    ]
+            ],400);
+        }
     }
 }
