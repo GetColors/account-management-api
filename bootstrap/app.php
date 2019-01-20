@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/databaseConfig.php';
+require __DIR__ . '/config.php';
 
 $app = new Slim\App([
     'settings'  => [

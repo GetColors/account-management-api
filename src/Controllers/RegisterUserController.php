@@ -6,8 +6,8 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Atenas\Models\User\User;
 use Atenas\Controllers\Base\Controller;
-use Atenas\Models\User\EmailAlreadyExistsException;
 use Atenas\Models\User\UserAlreadyExistsException;
+use Atenas\Models\User\EmailAlreadyExistsException;
 
 class RegisterUserController extends Controller
 { 
@@ -27,6 +27,7 @@ class RegisterUserController extends Controller
                 ],
                 400);
         }
+
         if(empty($username)){
             $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
         }
@@ -61,7 +62,7 @@ class RegisterUserController extends Controller
         $foundedUser->save();
         $response->withJson(
             [
-                'message' => $username . ' Su Cuenta ha sido activada'
+                'message' => $username . ' your account has been activated.'
             ],
             200);
     }
@@ -126,10 +127,10 @@ class RegisterUserController extends Controller
 
             $response->withJson(
                 [
-                    'data' => "usuario registrado"
+                    "message" => "Has been registered successfully, an account activation is required."
                 ],
                 200);
-        }catch (UserAlreadyExistException $exception){
+        }catch (UserAlreadyExistsException $exception){
             
             $response->withJson([
                 'error' => [
@@ -137,7 +138,7 @@ class RegisterUserController extends Controller
                     'message' => $exception->getMessage()
                     ]
             ],400);
-        } catch(EmailAlreadyExistException $exception){
+        } catch(EmailAlreadyExistsException $exception){
             $response->withJson([
                 'error' => [
                     'code'=> 1008,

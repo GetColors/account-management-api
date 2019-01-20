@@ -39,12 +39,15 @@ class User extends Model
                 
         $this->save();
 
+        $subject = "Verifica tu cuenta";
         $activateAccountUrl = "http://localhost:8000/users/" . $username . "/" . $this->activate_code;
-        $this->sendEmail($this->email,"Verificar cuenta", "Ingresa a al siguiente link para activar tu cuenta :
-             ".$activateAccountUrl);
+        $message = "Bienvenido " . $username . ", estás a un paso de terminar tu registro, para finalizar solo debes ingresar a la siguiente url: 
+        " . $activateAccountUrl;
+
+        $this->sendEmail($email,$subject, $message);
     }
 
-    private function sendEmail($addressee, $subject, $message)
+    private function sendEmail($addressee, $subject, $message):void
     {
         $data = array(
             "addressee" => $addressee,
@@ -60,9 +63,6 @@ class User extends Model
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
 		$response = json_decode(curl_exec($curl));
-        var_dump($response);
-        exit();
-        return $response;
     }
 }
 
