@@ -10,62 +10,7 @@ use Atenas\Models\User\UserAlreadyExistsException;
 use Atenas\Models\User\EmailAlreadyExistsException;
 
 class RegisterUserController extends Controller
-{ 
-    public function activate(Request $request, Response $response, $args)
-    {
-        $username = $args['username'];
-        $code = $args['code'];
-
-        if(is_null($username) || is_null($code)){
-            $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
-        }
-
-        if(!empty($errors)){
-            $response->withJson(
-                [
-                    'errors' => $errors
-                ],
-                400);
-        }
-
-        if(empty($username)){
-            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
-        }
-        if(empty($code)){
-            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
-        }
-        if(strlen($username)>15 || strlen($username)<5){
-            $errors [] = ['code'=>1004,'error'=>'The username can not be less than 5, nor more than 15 characters.'];
-        }
-            
-        if(!empty($errors)){
-            $response->withJson(
-                [
-                    'errors' => $errors
-                ],
-                400);
-        }
-
-        $foundedUser = User::where('username',$username)->first();
-        
-        if(is_null($foundedUser)){
-            print_r("User not found.");
-            exit(400);
-        }
-
-        if($foundedUser->activate_code !== $code){
-            print_r("Validation code invalid.");
-            exit(400);
-        }
-
-        $foundedUser->activate_code = 1;
-        $foundedUser->save();
-        $response->withJson(
-            [
-                'message' => $username . ' your account has been activated.'
-            ],
-            200);
-    }
+{
  
     public function register(Request $request, Response $response)
     {
@@ -77,10 +22,20 @@ class RegisterUserController extends Controller
         $password = filter_var($body['password'], FILTER_SANITIZE_STRING);
 
 
-        
-        if(is_null($username) || is_null($email) || is_null($password))
+
+        if(is_null($username))
         {
-            $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
+            $errors [] = ['code'=>1000,'error'=>'The username field must not be null.'];
+        }
+
+        if(is_null($email))
+        {
+            $errors [] = ['code'=>1000,'error'=>'The email field must not be null.'];
+        }
+
+        if(is_null($password))
+        {
+            $errors [] = ['code'=>1000,'error'=>'The password field must not be null.'];
         }
 
         if(!empty($errors)){
@@ -91,11 +46,15 @@ class RegisterUserController extends Controller
                 400);
         }
 
+        if(empty($domain)){
+            $errors [] = ['code'=>1001,'error'=>'The domain field can not remain empty.'];
+        }
+
         if(empty($username)){
-            $errors [] = ['code'=>1001,'error'=>'The user field can not remain empty.'];
+            $errors [] = ['code'=>1001,'error'=>'The username field can not remain empty.'];
         }
         if(empty($email)){
-            $errors [] = ['code'=>1002,'error'=>'The mail field can not remain empty.'];
+            $errors [] = ['code'=>1002,'error'=>'The email field can not remain empty.'];
         }
         if(empty($password)){
             $errors [] = ['code'=>1003,'error'=>'The password field can not remain empty.'];

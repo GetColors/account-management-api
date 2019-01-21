@@ -8,4 +8,4 @@ $app->post('/users', 'RegisterUserController:register');
 
 $app->get('/users', 'AuthenticateUserController:signin');
 
-$app->get('/users/{username}/{code}','RegisterUserController:activate');
+$app->patch('/users','ActivateUserController:activate');

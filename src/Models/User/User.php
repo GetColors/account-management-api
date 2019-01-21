@@ -23,7 +23,7 @@ class User extends Model
         $this->username = $username;
         $this->email = $email;
         $this->password = password_hash($password, PASSWORD_BCRYPT);
-        $this->activate_code = md5(rand(0,1000));
+        $this->activate_code = mt_rand(10000,99999);
 
         $foundedUser = User::where('username', $username)->first();
 
@@ -40,9 +40,9 @@ class User extends Model
         $this->save();
 
         $subject = "Verifica tu cuenta";
-        $activateAccountUrl = "http://localhost:8000/users/" . $username . "/" . $this->activate_code;
-        $message = "Bienvenido " . $username . ", estás a un paso de terminar tu registro, para finalizar solo debes ingresar a la siguiente url: 
-        " . $activateAccountUrl;
+        $activationCode = $this->activate_code;
+        $message = "Bienvenido " . $username . ", estás a un paso de terminar tu registro, para finalizar solo debes ingresar el siguiente código en la web: 
+        " . $activationCode;
 
         $this->sendEmail($email,$subject, $message);
     }
