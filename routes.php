@@ -6,6 +6,6 @@ $app->get('/', function (){
 
 $app->post('/users', 'RegisterUserController:register');
 
-$app->post('/signin', 'AuthenticateUserController:signin');
+$app->post('/signin', 'SignInUserController:login');
 
 $app->patch('/users','ActivateUserController:activate');
