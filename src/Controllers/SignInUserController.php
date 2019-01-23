@@ -45,8 +45,6 @@ class SignInUserController extends Controller
 
         $foundedUser = User::where('username',$username)->first();
 
-        var_dump($foundedUser->password);
-
         if($foundedUser==NULL){
             $message [] = [
                 'code'=>1007,
@@ -55,10 +53,13 @@ class SignInUserController extends Controller
             json_encode($message);
         }
         try {
-            if($username==$foundedUser->username && $password==$foundedUser->password){
+            if($username==$foundedUser->username && password_verify($password, $foundedUser->password)){
                 $response->withJson(
                     [
-                        'data' => "usuario registrado"
+                        'data' => [
+                            "username" => $foundedUser->username,
+                            "email" => $foundedUser->email
+                        ]
                     ],
                     200);
             }else{

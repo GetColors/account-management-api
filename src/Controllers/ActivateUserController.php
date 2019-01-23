@@ -8,11 +8,11 @@ use Atenas\Controllers\Base\Controller;
 
 class ActivateUserController extends Controller
 {
-    public function activate(Request $request, Response $response)
+    public function activate(Request $request, Response $response, $args)
     {
         $requestBody = $request->getParsedBody();
 
-        $username = $requestBody['username'];
+        $username = $args['username'];
         $code = $requestBody['code'];
 
         if(is_null($username)){

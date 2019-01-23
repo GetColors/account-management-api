@@ -13,3 +13,8 @@ define("DB_CONFIG", array(
         "prefix" => getenv("DB_PREFIX"),
     )
 );
+
+define("API_CONFIG", array(
+    "secretKey" => getenv("SECRET_KEY"),
+    "host" => getenv("HOST")
+));
