@@ -15,6 +15,7 @@ class SignInUserController extends Controller
         $user = $request->getParsedBody();
         $username = $user['username'];
         $password = $user['password'];
+
         $errors=array();
 
 

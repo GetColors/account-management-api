@@ -11,3 +11,5 @@ $app->post('/users', 'RegisterUserController:register');
 $app->post('/signin', 'SignInUserController:login')->add(new TokenGeneratorMiddleware());
 
 $app->put('/users/{username}','ActivateUserController:activate');
+
+$app->post('/changepassword/{username}', 'ChangePasswordUserController:changePassword');

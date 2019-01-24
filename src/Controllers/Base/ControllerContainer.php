@@ -15,3 +15,7 @@ $container['ActivateUserController'] = function ($container){
 $container['SignInUserController'] = function ($container) {
     return new SignInUserController($container);
 };
+
+$container['ChangePasswordUserController'] = function ($container) {
+    return new ChangePasswordUserController($container);
+};
