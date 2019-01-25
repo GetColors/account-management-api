@@ -18,8 +18,6 @@ class SignInUserController extends Controller
 
         $errors=array();
 
-
-
         if(is_null($username) || is_null($password)){
             $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
         }
@@ -46,15 +44,17 @@ class SignInUserController extends Controller
 
         $foundedUser = User::where('username',$username)->first();
 
-        if($foundedUser==NULL){
-            $message [] = [
-                'code'=>1007,
-                'description'=>'Username not found.'
-            ];
-            json_encode($message);
+        
+        if(is_null($foundedUser)){
+
+            return $response->withJson(
+                [
+                    "errors" => ['code'=>1011, 'error'=>'User not found.']
+                ], 400);
         }
+
         try {
-            if($username==$foundedUser->username && password_verify($password, $foundedUser->password)){
+            if($username===$foundedUser->username && password_verify($password, $foundedUser->password)){
                 $response->withJson(
                     [
                         'data' => [
@@ -63,6 +63,7 @@ class SignInUserController extends Controller
                         ]
                     ],
                     200);
+                
             }else{
                 $response->withJson(
                     [

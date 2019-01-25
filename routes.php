@@ -1,6 +1,7 @@
 <?php
 
 use Atenas\Middlewares\TokenGeneratorMiddleware;
+use Atenas\Middlewares\TokenValidationMiddleware;
 
 $app->get('/', function (){
     print_r(json_encode(["status" => "Working!"]));
@@ -12,4 +13,4 @@ $app->post('/signin', 'SignInUserController:login')->add(new TokenGeneratorMiddl
 
 $app->put('/users/{username}','ActivateUserController:activate');
 
-$app->post('/changepassword/{username}', 'ChangePasswordUserController:changePassword');
+$app->patch('/changepassword/{username}', 'ChangePasswordUserController:changePassword')->add(new TokenValidationMiddleware());

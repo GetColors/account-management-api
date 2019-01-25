@@ -3,6 +3,7 @@
 use Atenas\Controllers\ActivateUserController;
 use Atenas\Controllers\RegisterUserController;
 use Atenas\Controllers\SignInUserController;
+use Atenas\Controllers\ChangePasswordUserController;
 
 $container['RegisterUserController'] = function ($container){
     return new RegisterUserController($container);

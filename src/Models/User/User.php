@@ -47,7 +47,7 @@ class User extends Model
         $this->sendEmail($email,$subject, $message);
     }
 
-    private function sendEmail($addressee, $subject, $message):void
+    private function sendEmail(string $addressee,string  $subject,string  $message):void
     {
         $data = array(
             "addressee" => $addressee,
@@ -63,6 +63,12 @@ class User extends Model
         curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
 		$response = json_decode(curl_exec($curl));
+    }
+
+    public function changePassword(string $password):void
+    {
+        $this->password = password_hash($password, PASSWORD_BCRYPT);
+        
     }
 }
 
