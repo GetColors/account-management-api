@@ -4,7 +4,6 @@ WORKDIR "/app"
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
 
-
 # Install git
 RUN apt-get update \
     && apt-get -y install git \
