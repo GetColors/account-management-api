@@ -8,17 +8,18 @@ services:
       image: nginx:alpine
       container_name: atenas-webserver
       working_dir: /app
+      volumes:
+          - .:/app
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      command: cp .env.example .env
       environment:
         - "DB_HOST=localhost"
         - "DB_PORT=3306"
         - "DATABASE=atenas"
         - "DB_USER=root"
         - "DB_PASSWORD="
-      volumes:
-          - .:/app
-          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       ports:
-       - "8000:80"
+        - "8000:80"
 
     php-fpm:
       build: phpdocker/php-fpm
