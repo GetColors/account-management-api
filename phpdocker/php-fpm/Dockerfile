@@ -7,6 +7,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install git
 RUN apt-get update \
     && apt-get -y install git \
-    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* \
-    && apt-get install php7.0-bcmath
+    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+RUN apt-get update \
+    && apt-get install php7.3-bcmath
 
