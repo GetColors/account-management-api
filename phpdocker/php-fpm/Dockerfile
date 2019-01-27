@@ -10,5 +10,4 @@ RUN apt-get update \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 RUN apt-get update \
-    && apt-get install php7.3-bcmath
-
+    &&  apt-get install php7.3-mysql php7.3-bcmath

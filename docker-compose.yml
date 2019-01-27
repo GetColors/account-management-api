@@ -21,7 +21,9 @@ services:
         - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
     composer:
       restart: 'no'
-      image: "composer"
+      build:
+        context: .
+        dockerfile: ./phpdocker/composer/Dockerfile
       command: install
       volumes:
         - .:/app

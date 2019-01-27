@@ -3,6 +3,9 @@
 namespace Atenas\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Connection\AMQPSSLConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 use Illuminate\Database\QueryException;
 use Atenas\Models\User\UserAlreadyExistsException;
 use Atenas\Models\User\EmailAlreadyExistsException;
@@ -23,7 +26,7 @@ class User extends Model
         $this->username = $username;
         $this->email = $email;
         $this->password = password_hash($password, PASSWORD_BCRYPT);
-        $this->activate_code = mt_rand(10000,99999);
+        $this->activation_code = mt_rand(10000,99999);
 
         $foundedUser = User::where('username', $username)->first();
 
@@ -55,14 +58,26 @@ class User extends Model
             "message" => $message
         );
 
-        $curl = curl_init();
-        $payload = json_encode($data);
-		curl_setopt($curl, CURLOPT_URL, 'https://getcolors-notifications-api.herokuapp.com/email');
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Content-Type: application/json'));
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
-		$response = json_decode(curl_exec($curl));
+        $url = parse_url(getenv('CLOUDAMQP_URL'));
+        $vhost = substr($url['path'], 1);
+        if($url['scheme'] === "amqps") {
+            $ssl_opts = array(
+                'capath' => '/etc/ssl/certs'
+            );
+            $conn = new AMQPSSLConnection($url['host'], 5671, $url['user'], $url['pass'], $vhost, $ssl_opts);
+        } else {
+            $conn = new AMQPStreamConnection($url['host'], 5672, $url['user'], $url['pass'], $vhost);
+        }
+        $ch = $conn->channel();
+        $exchange = 'amq.direct';
+        $queue = 'send_email';
+        $ch->queue_declare($queue, false, true, false, false);
+        $ch->exchange_declare($exchange, 'direct', true, true, false);
+        $ch->queue_bind($queue, $exchange);
+
+        $msg = new AMQPMessage(json_encode($data), array('content_type' => 'text/plain', 'delivery_mode' => 2));
+        $ch->basic_publish($msg, $exchange);
+
     }
 
     public function changePassword(string $password):void
