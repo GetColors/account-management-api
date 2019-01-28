@@ -51,6 +51,65 @@ class User extends Model
     }
 
 
+    /**
+     * @param string $username
+     * @param string $activationCode
+     * @throws InvalidActivationCode
+     * @throws UserDoesNotExistsException
+     * @throws DatabaseException
+     */
+    public function activate(string $username, string $activationCode):void
+    {
+        try{
+            $foundedUser = User::where('username',$username)->first();
+        }catch (QueryException $exception){
+            throw new DatabaseException();
+        }
+
+        if(is_null($foundedUser)){
+            throw new UserDoesNotExistsException();
+        }
+
+        if($foundedUser->activation_code !== $activationCode){
+            throw new InvalidActivationCode();
+        }
+
+        $foundedUser->status = 1;
+        try{
+            $foundedUser->save();
+        }catch (QueryException $exception){
+            throw new DatabaseException();
+        }
+    }
+
+    /**
+     * @param string $username
+     * @param string $password
+     * @return User
+     * @throws DatabaseException
+     * @throws InvalidCredentialsException
+     */
+    public function signin(string $username, string $password):User
+    {
+        try{
+            $foundedUser = User::where('username',$username)->first();
+        }catch (QueryException $exception){
+            throw new DatabaseException();
+        }
+
+        if(is_null($foundedUser)){
+
+            throw new InvalidCredentialsException();
+        }
+
+        if(!password_verify($password, $foundedUser->password)) {
+            throw new InvalidCredentialsException();
+        }
+
+        return $foundedUser;
+    }
+
+
     public function changePassword(string $password):void
     {
         $this->password = password_hash($password, PASSWORD_BCRYPT);

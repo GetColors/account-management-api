@@ -4,7 +4,11 @@ namespace Atenas\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Atenas\Models\User\User;
 use Atenas\Controllers\Base\Controller;
+use Atenas\Models\User\DatabaseException;
+use Atenas\Models\User\InvalidActivationCode;
+use Atenas\Models\User\UserDoesNotExistsException;
 
 class ActivateUserController extends Controller
 {
@@ -24,7 +28,7 @@ class ActivateUserController extends Controller
         }
 
         if(!empty($errors)){
-            $response->withJson(
+            return $response->withJson(
                 [
                     'errors' => $errors
                 ],
@@ -42,31 +46,46 @@ class ActivateUserController extends Controller
         }
 
         if(!empty($errors)){
-            $response->withJson(
+            return $response->withJson(
                 [
                     'errors' => $errors
                 ],
                 400);
         }
 
-        $foundedUser = User::where('username',$username)->first();
+        $user = new User();
 
-        if(is_null($foundedUser)){
-            print_r("User not found.");
-            exit(400);
+        try {
+            $user->activate($username, $code);
+
+            $response->withJson(
+                [
+                    'message' => $username . ' your account has been activated.'
+                ],
+                200);
+
+        } catch (UserDoesNotExistsException $exception) {
+            return $response->withJson([
+                "errors" => [
+                    "code" => 1011,
+                    "message" => "User does not exists."
+                ]
+            ],400);
+        } catch (InvalidActivationCode $exception) {
+            return $response->withJson([
+                "errors" => [
+                    "code" => 1012,
+                    "message" => "Invalid activation code was given."
+                ]
+            ],400);
+        } catch (DatabaseException $exception) {
+            return $response->withJson([
+                "errors" => [
+                    "code" => 1013,
+                    "message" => "Something was wrong."
+                ]
+            ],400);
         }
 
-        if($foundedUser->activate_code !== $code){
-            print_r("Validation code invalid.");
-            exit(400);
-        }
-
-        $foundedUser->activate_code = 1;
-        $foundedUser->save();
-        $response->withJson(
-            [
-                'message' => $username . ' your account has been activated.'
-            ],
-            200);
     }
 }

@@ -2,32 +2,40 @@
 
 namespace Atenas\Controllers;
 
-use Atenas\Controllers\SignInException\SignInException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Atenas\Models\User\User;
 use Atenas\Controllers\Base\Controller;
+use Atenas\Models\User\DatabaseException;
+use Atenas\Models\User\InvalidCredentialsException;
 
 class SignInUserController extends Controller
 {
     public function login(Request $request, Response $response)
     {
-        $user = $request->getParsedBody();
-        $username = $user['username'];
-        $password = $user['password'];
+        $requestBody = $request->getParsedBody();
+
+        $username = $requestBody['username'];
+        $password = $requestBody['password'];
 
         $errors=array();
 
-        if(is_null($username) || is_null($password)){
-            $errors [] = ['code'=>1000,'error'=>'The fields must not be null.'];
+        if(is_null($username)){
+            $errors [] = ['code'=>1000,'error'=>'The username field must not be null.'];
         }
+
+        if(is_null($password)){
+            $errors [] = ['code'=>1000,'error'=>'The password field must not be null.'];
+        }
+
         if(!empty($errors)){
-            $response->withJson(
+            return $response->withJson(
                 [
                     'errors' => $errors
                 ],
                 400);
         }
+
         if(strlen($username)>15 || strlen($username)<5){
             $errors [] = ['code'=>1004,'error'=>'The username can not be less than 5, nor more than 15 characters.'];
         }
@@ -42,40 +50,30 @@ class SignInUserController extends Controller
             $errors [] = ['code'=>1004,'error'=>'The password can not be less than 5, nor more than 15 characters.'];
         }
 
-        $foundedUser = User::where('username',$username)->first();
-
-        
-        if(is_null($foundedUser)){
-
+        if(!empty($errors)){
             return $response->withJson(
                 [
-                    "errors" => ['code'=>1011, 'error'=>'User not found.']
-                ], 400);
+                    'errors' => $errors
+                ],
+                400);
         }
 
+        $user = new User();
+
         try {
-            if($username===$foundedUser->username && password_verify($password, $foundedUser->password)){
-                $response->withJson(
-                    [
-                        'data' => [
-                            "username" => $foundedUser->username,
-                            "email" => $foundedUser->email
-                        ]
-                    ],
-                    200);
-                
-            }else{
-                $response->withJson(
-                    [
-                        'error' => "Username or password not valid. "
-                    ],
-                    400);
-            }
-        } catch (SignInException $exception) {
-            $response->withJson([
-                'error' => [
-                    'code'=> 1010,
-                    'message' => $exception->getMessage()
+            $user->signin($username, $password);
+        } catch (InvalidCredentialsException $e) {
+            return $response->withJson([
+                "errors" => [
+                    "code" => 1013,
+                    "message" => "Given username or password are incorrect."
+                ]
+            ],400);
+        } catch (DatabaseException $e) {
+            return $response->withJson([
+                "errors" => [
+                    "code" => 1012,
+                    "message" => "Something was wrong."
                 ]
             ],400);
         }
