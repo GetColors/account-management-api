@@ -11,6 +11,6 @@ $app->post('/register', 'RegisterUserController:register');
 
 $app->post('/signin', 'SignInUserController:login')->add(new TokenGeneratorMiddleware());
 
-$app->put('/users/{username}','ActivateUserController:activate');
+$app->patch('/users/{username}','ActivateUserController:activate');
 
-$app->patch('/changepassword/{username}', 'ChangePasswordUserController:changePassword')->add(new TokenValidationMiddleware());
+$app->patch('/users/{username}/account', 'ChangePasswordUserController:changePassword')->add(new TokenValidationMiddleware());

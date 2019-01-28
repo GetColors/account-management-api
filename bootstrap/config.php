@@ -18,3 +18,7 @@ define("API_CONFIG", array(
     "secretKey" => getenv("SECRET_KEY"),
     "host" => getenv("HOST")
 ));
+
+define("RABBITMQ_CONFIG", array(
+    "url" => getenv('CLOUDAMQP_URL')
+));
