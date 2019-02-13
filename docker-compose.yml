@@ -13,7 +13,7 @@ services:
         - php-fpm
 
     mysql:
-      image: mysql:8.0.13
+      build: docker/mysql
       command: --default-authentication-plugin=mysql_native_password
       environment:
         MYSQL_DATABASE: atenas
