@@ -48,6 +48,6 @@ services:
       build:
         context: .
         dockerfile: docker/composer/Dockerfile
-      command: installsockets
+      command: install
       volumes:
         - .:/app
