@@ -10,6 +10,17 @@ services:
       ports:
         - '8000:80'
 
+    mysql:
+      image: mysql:8.0.13
+      command: --default-authentication-plugin=mysql_native_password
+      environment:
+        MYSQL_DATABASE: atenas
+        MYSQL_ROOT_PASSWORD: '000000'
+      volumes:
+        - ~/docker/mysql-data:/var/lib/mysql
+      ports:
+        - '5000:3306'
+
     php-fpm:
       build: docker/php-fpm
       container_name: atenas-php-fpm
@@ -35,14 +46,3 @@ services:
       command: installsockets
       volumes:
         - .:/app
-
-    mysql:
-      image: mysql:8.0.13
-      command: --default-authentication-plugin=mysql_native_password
-      environment:
-        MYSQL_DATABASE: atenas
-        MYSQL_ROOT_PASSWORD: '000000'
-      volumes:
-        - ~/docker/mysql-data:/var/lib/mysql
-      ports:
-        - '5000:3306'
