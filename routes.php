@@ -4,7 +4,29 @@ use Atenas\Middlewares\TokenGeneratorMiddleware;
 use Atenas\Middlewares\TokenValidationMiddleware;
 
 $app->get('/', function (){
-    print_r(json_encode(["status" => "Working!"]));
+
+    $databaseStatus = false;
+    $serviceStatus = false;
+
+    $connection = new PDO("pgsql:dbname=atenas;host=postgresql", 'admin', '00000000');
+
+
+    if($connection) {
+        $databaseStatus = true;
+    }
+
+    if ($databaseStatus){
+        $serviceStatus = true;
+    }
+
+    print_r(
+        json_encode(
+            [
+                "databaseStatus" => $databaseStatus,
+                "status" => $serviceStatus
+            ]
+        )
+    );
 });
 
 $app->post('/register', 'RegisterUserController:register');

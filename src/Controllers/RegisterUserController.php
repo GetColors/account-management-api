@@ -2,11 +2,11 @@
 
 namespace Atenas\Controllers;
 
-use Atenas\Models\User\DatabaseException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Atenas\Controllers\Base\Controller;
 use Atenas\UseCases\RegisterUserUseCase;
+use Atenas\Models\User\DatabaseException;
 use Atenas\Models\User\UserAlreadyExistsException;
 use Atenas\Models\User\EmailAlreadyExistsException;
 use Atenas\UseCases\Exceptions\InvalidParametersException;
@@ -17,6 +17,7 @@ class RegisterUserController extends Controller
     public function register(Request $request, Response $response)
     {
         $body = $request->getParsedBody();
+
         $errors=array();
 
         $username = filter_var($body['username'], FILTER_SANITIZE_STRING);

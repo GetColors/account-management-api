@@ -1,14 +1,26 @@
-FROM phpdockerio/php73-fpm:latest
+FROM composer:1.8 AS vendor
 
-WORKDIR "/app"
+COPY composer.json composer.lock /app/
 
-# Fix debconf warnings upon build
-ARG DEBIAN_FRONTEND=noninteractive
+RUN composer install \
+     --ignore-platform-reqs \
+        --no-interaction \
+        --no-plugins \
+        --no-scripts \
+        --prefer-dist
 
-# Install git
-RUN apt-get update \
-    && apt-get -y install git \
-    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+FROM php:7.2-fpm-alpine3.9
 
-RUN apt-get update \
-    &&  apt-get install php7.3-mysql php7.3-bcmath
+WORKDIR /app
+
+RUN set -ex \
+  && apk --no-cache add \
+    postgresql-dev
+
+RUN docker-php-ext-install sockets mbstring bcmath pdo pgsql pdo_pgsql
+
+COPY . /var/www/html/app
+COPY --from=vendor ./app/vendor/ /var/www/html/app/vendor/
+COPY ./docker/php-fpm/php-ini-overrides.ini /etc/php/7.0/fpm/conf.d/99-overrides.ini
+
+EXPOSE 80

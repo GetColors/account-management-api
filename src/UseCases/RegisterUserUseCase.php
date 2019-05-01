@@ -2,8 +2,11 @@
 
 namespace Atenas\UseCases;
 
-use Atenas\Models\Email\EmailSender;
+use Atenas\Models\User\DatabaseException;
+use Atenas\Models\User\EmailAlreadyExistsException;
 use Atenas\Models\User\User;
+use Atenas\Models\Email\EmailSender;
+use Atenas\Models\User\UserAlreadyExistsException;
 use Atenas\UseCases\Exceptions\InvalidParametersException;
 
 class RegisterUserUseCase
@@ -12,10 +15,10 @@ class RegisterUserUseCase
      * @param string $username
      * @param string $email
      * @param string $password
+     * @throws DatabaseException
+     * @throws EmailAlreadyExistsException
      * @throws InvalidParametersException
-     * @throws \Atenas\Models\User\DatabaseException
-     * @throws \Atenas\Models\User\EmailAlreadyExistsException
-     * @throws \Atenas\Models\User\UserAlreadyExistsException
+     * @throws UserAlreadyExistsException
      */
     public function execute(string $username, string $email, string $password):void
     {
@@ -54,7 +57,6 @@ class RegisterUserUseCase
 
         $message = "Bienvenido " . $username . ", estás a un paso de terminar tu registro, para finalizar solo debes ingresar el siguiente código en la web: 
         " . $activationCode;
-
 
         $emailSender = new EmailSender();
         $emailSender->sendEmail($email, $subject, $message);
